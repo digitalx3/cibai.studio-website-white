@@ -1,0 +1,246 @@
+@import "tailwindcss";
+
+/* ============================================
+   CIBAI STUDIO — Cyberpunk Light Design System
+   ============================================ */
+
+@theme inline {
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --font-sans: var(--font-space-grotesk);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+:root {
+  /* === Paleta Cyberpunk Light === */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F5F5F5;
+  --bg-tertiary: #EDEDED;
+  --text-primary: #0A0A0A;
+  --text-secondary: #3A3A3A;
+  --text-muted: #7A7A7A;
+
+  /* === Acentos Neon === */
+  --neon-red: #FF2D00;
+  --neon-red-dim: rgba(255, 45, 0, 0.15);
+  --neon-red-glow: rgba(255, 45, 0, 0.4);
+  --neon-cyan: #00C9B4;
+  --neon-cyan-dim: rgba(0, 201, 180, 0.12);
+  --neon-cyan-glow: rgba(0, 201, 180, 0.35);
+  --neon-violet: #7B00FF;
+  --neon-violet-dim: rgba(123, 0, 255, 0.1);
+  --neon-violet-glow: rgba(123, 0, 255, 0.3);
+  --neon-yellow: #FFE500;
+  --neon-yellow-dim: rgba(255, 229, 0, 0.12);
+
+  /* === Bordes === */
+  --border-dark: rgba(10, 10, 10, 0.12);
+  --border-red: var(--neon-red);
+  --border-cyan: var(--neon-cyan);
+}
+
+/* =====================
+   RESET GLOBAL
+   ===================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* =====================
+   SCANLINES OVERLAY
+   ===================== */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(10, 10, 10, 0.025) 3px,
+    rgba(10, 10, 10, 0.025) 4px
+  );
+}
+
+/* =====================
+   KEYFRAMES
+   ===================== */
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes blink-fast {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes glitch-red {
+  0%   { clip-path: inset(0 0 90% 0); transform: translate(-3px, 0); color: var(--neon-red); }
+  25%  { clip-path: inset(40% 0 40% 0); transform: translate(3px, 0); }
+  50%  { clip-path: inset(70% 0 10% 0); transform: translate(-2px, 0); color: var(--neon-red); }
+  75%  { clip-path: inset(15% 0 70% 0); transform: translate(2px, 0); }
+  100% { clip-path: inset(0 0 90% 0); transform: translate(0, 0); }
+}
+
+@keyframes glitch-cyan {
+  0%   { clip-path: inset(5% 0 85% 0); transform: translate(3px, 0); color: var(--neon-cyan); }
+  25%  { clip-path: inset(50% 0 30% 0); transform: translate(-3px, 0); }
+  50%  { clip-path: inset(20% 0 65% 0); transform: translate(2px, 0); color: var(--neon-cyan); }
+  75%  { clip-path: inset(75% 0 5% 0); transform: translate(-2px, 0); }
+  100% { clip-path: inset(5% 0 85% 0); transform: translate(0, 0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes float-reverse {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(8px); }
+}
+
+@keyframes pulse-neon {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes progress-fill {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+/* =====================
+   UTILIDADES NEON
+   ===================== */
+
+.neon-text-red { color: var(--neon-red); }
+.neon-text-cyan { color: var(--neon-cyan); }
+.neon-text-violet { color: var(--neon-violet); }
+.neon-text-yellow { color: var(--neon-yellow); }
+
+.neon-border-red {
+  border: 1px solid var(--neon-red);
+  box-shadow: 0 0 8px rgba(255, 45, 0, 0.2), inset 0 0 4px rgba(255, 45, 0, 0.05);
+}
+
+.neon-border-cyan {
+  border: 1px solid var(--neon-cyan);
+  box-shadow: 0 0 8px rgba(0, 201, 180, 0.2), inset 0 0 4px rgba(0, 201, 180, 0.05);
+}
+
+.neon-border-violet {
+  border: 1px solid var(--neon-violet);
+  box-shadow: 0 0 8px rgba(123, 0, 255, 0.2), inset 0 0 4px rgba(123, 0, 255, 0.05);
+}
+
+.terminal-text {
+  font-family: var(--font-jetbrains-mono), 'JetBrains Mono', 'Courier New', monospace;
+  letter-spacing: 0.02em;
+}
+
+.glitch-text {
+  position: relative;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.glitch-text::before {
+  animation: glitch-red 4s infinite;
+  opacity: 0.7;
+}
+
+.glitch-text::after {
+  animation: glitch-cyan 4s infinite 0.15s;
+  opacity: 0.7;
+}
+
+.glitch-hover::before,
+.glitch-hover::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.glitch-hover:hover::before {
+  animation: glitch-red 0.5s steps(2, end) infinite;
+  opacity: 0.7;
+}
+
+.glitch-hover:hover::after {
+  animation: glitch-cyan 0.5s steps(2, end) infinite 0.05s;
+  opacity: 0.7;
+}
+
+.blink {
+  animation: blink 1s step-end infinite;
+}
+
+.blink-fast {
+  animation: blink-fast 0.7s step-end infinite;
+}
+
+.float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.float-reverse {
+  animation: float-reverse 4.5s ease-in-out infinite;
+}
+
+.cursor-blink {
+  display: inline-block;
+  width: 10px;
+  height: 1.1em;
+  background-color: var(--neon-red);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: blink 0.8s step-end infinite;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: var(--neon-cyan);
+  border-radius: 50%;
+  animation: pulse-neon 1.5s ease-in-out infinite;
+  box-shadow: 0 0 6px var(--neon-cyan);
+}
+
+/* =====================
+   SCROLLBAR
+   ===================== */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--neon-red); border-radius: 2px; }
+
+::selection {
+  background-color: var(--neon-red);
+  color: #FFFFFF;
+}
