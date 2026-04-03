@@ -3,29 +3,23 @@ import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-space-grotesk",
   display: "swap",
 });
 
 const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "700"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-jetbrains-mono",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "CIBAI Studio — Diseño Web & Desarrollo",
-  description:
-    "Estudio de diseño y desarrollo web. Creamos experiencias digitales que impactan. Webs, webapps y comercio electrónico de alto rendimiento.",
-  keywords: ["diseño web", "desarrollo web", "webapp", "ecommerce", "CIBAI Studio"],
-  openGraph: {
-    title: "CIBAI Studio — Diseño Web & Desarrollo",
-    description: "Creamos experiencias digitales que impactan.",
-    type: "website",
-  },
+  title: "CIBAI Studio — Diseño y Desarrollo Web",
+  description: "Estudio de diseño y desarrollo web que crea páginas web y webapps espectaculares.",
+  keywords: ["diseño web", "desarrollo web", "webapps", "CIBAI", "studio"],
 };
 
 export default function RootLayout({
@@ -34,13 +28,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="es"
-      className={`${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
-    >
-      <body className="min-h-full bg-white text-[#0A0A0A] antialiased overflow-x-hidden">
-        {children}
-      </body>
+    <html lang="es" className={`${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
+      <body>{children}</body>
     </html>
   );
 }

@@ -1,27 +1,27 @@
-import StatusBar from './components/StatusBar';
-import CRTOverlay from './components/CRTOverlay';
-import Navbar from './components/Navbar';
-import HeroSection from './components/HeroSection';
-import ServiciosSection from './components/ServiciosSection';
+import StatusBar from "./components/StatusBar";
+import CRTOverlay from "./components/CRTOverlay";
+import Navbar from "./components/Navbar";
+import HeroSection from "./components/HeroSection";
+import ServiciosSection from "./components/ServiciosSection";
+import ProcesoSection from "./components/ProcesoSection";
+import PortfolioSection from "./components/PortfolioSection";
+import ContactoSection from "./components/ContactoSection";
+import Footer from "./components/Footer";
 
-export default function HomePage() {
+export default function Home() {
   return (
     <>
-      {/* Global overlays */}
       <CRTOverlay />
       <StatusBar />
       <Navbar />
-
-      {/* Page content */}
-      <main style={{ paddingTop: '0' }}>
+      <main>
         <HeroSection />
         <ServiciosSection />
-
-        {/* Placeholder sections para CIB-11 */}
-        <div id="proceso" style={{ minHeight: '80px' }} />
-        <div id="portfolio" style={{ minHeight: '80px' }} />
-        <div id="contacto" style={{ minHeight: '80px' }} />
+        <ProcesoSection />
+        <PortfolioSection />
+        <ContactoSection />
       </main>
+      <Footer />
     </>
   );
 }

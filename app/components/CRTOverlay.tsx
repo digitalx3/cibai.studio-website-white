@@ -1,53 +1,48 @@
-'use client';
+"use client";
 
 export default function CRTOverlay() {
   return (
     <>
-      {/* Scanlines fijas - fondo blanco */}
+      {/* Scanlines sutiles sobre fondo blanco */}
       <div
-        aria-hidden="true"
         style={{
-          position: 'fixed',
+          position: "fixed",
           inset: 0,
-          zIndex: 9997,
-          pointerEvents: 'none',
-          background: 'repeating-linear-gradient(to bottom, transparent 0px, transparent 2px, rgba(10,10,10,0.018) 2px, rgba(10,10,10,0.018) 3px)',
-          willChange: 'transform',
+          zIndex: 9990,
+          pointerEvents: "none",
+          background:
+            "repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, rgba(0,0,0,0.018) 3px, rgba(0,0,0,0.018) 4px)",
         }}
+        aria-hidden="true"
       />
 
-      {/* Vignette sutil en esquinas */}
+      {/* Vignette perimetral */}
       <div
-        aria-hidden="true"
         style={{
-          position: 'fixed',
+          position: "fixed",
           inset: 0,
-          zIndex: 9996,
-          pointerEvents: 'none',
-          background: 'radial-gradient(ellipse at center, transparent 60%, rgba(10,10,10,0.04) 100%)',
+          zIndex: 9989,
+          pointerEvents: "none",
+          background:
+            "radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.06) 100%)",
         }}
+        aria-hidden="true"
       />
 
-      {/* Línea de scan ocasional */}
-      <style>{`
-        @keyframes scan-sweep-crt {
-          0%   { transform: translateY(-100%); opacity: 0; }
-          5%   { opacity: 0.15; }
-          95%  { opacity: 0.15; }
-          100% { transform: translateY(110vh); opacity: 0; }
-        }
-        .crt-scan-line {
-          position: fixed;
-          left: 0;
-          right: 0;
-          height: 2px;
-          background: linear-gradient(to right, transparent, rgba(255,45,0,0.08), rgba(0,201,180,0.08), transparent);
-          z-index: 9999;
-          pointer-events: none;
-          animation: scan-sweep-crt 8s linear infinite;
-        }
-      `}</style>
-      <div className="crt-scan-line" aria-hidden="true" />
+      {/* Noise grain overlay */}
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 9988,
+          pointerEvents: "none",
+          opacity: 0.025,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+          backgroundRepeat: "repeat",
+          backgroundSize: "128px 128px",
+        }}
+        aria-hidden="true"
+      />
     </>
   );
 }

@@ -1,415 +1,331 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from "react";
 
-const TERMINAL_LINES = [
-  '> CIBAI_STUDIO --mode=creative',
-  'Initializing design engine...',
-  '[--------------------] 100%',
-  'READY. Diseñamos el futuro digital.',
+const TYPING_STRINGS = [
+  "// Bienvenido al futuro del diseño digital_",
+  "// Construimos webs que rompen esquemas_",
+  "// Código limpio. Diseño brutal. Resultados reales_",
 ];
 
-function TerminalTyping() {
-  const [displayedLines, setDisplayedLines] = useState<string[]>([]);
-  const [currentLine, setCurrentLine] = useState(0);
-  const [currentChar, setCurrentChar] = useState(0);
-  const [done, setDone] = useState(false);
+export default function HeroSection() {
+  const [typedText, setTypedText] = useState("");
+  const [stringIndex, setStringIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+  const [deleting, setDeleting] = useState(false);
+  const [showCursor, setShowCursor] = useState(true);
 
   useEffect(() => {
-    if (done) return;
-    if (currentLine >= TERMINAL_LINES.length) {
-      setDone(true);
-      return;
-    }
+    const currentString = TYPING_STRINGS[stringIndex];
 
-    const line = TERMINAL_LINES[currentLine];
-    const isProgressBar = line.includes('[---');
-
-    // Progress bar animation
-    if (isProgressBar) {
-      const filledChars = ['[', ']'];
-      let progress = 0;
-      const progressInterval = setInterval(() => {
-        progress++;
-        const filled = '='.repeat(progress);
-        const empty = '-'.repeat(20 - progress);
-        const progressLine = `[${filled}${empty}] ${Math.floor((progress / 20) * 100)}%`;
-        setDisplayedLines(prev => {
-          const updated = [...prev];
-          updated[currentLine] = progressLine;
-          return updated;
-        });
-        if (progress >= 20) {
-          clearInterval(progressInterval);
-          setDisplayedLines(prev => {
-            const updated = [...prev];
-            updated[currentLine] = '[====================] 100%';
-            return updated;
-          });
-          setTimeout(() => {
-            setCurrentLine(l => l + 1);
-            setCurrentChar(0);
-          }, 400);
-        }
-      }, 60);
-      return () => clearInterval(progressInterval);
-    }
-
-    // Normal typing
-    if (currentChar < line.length) {
-      const delay = line[currentChar] === ' ' ? 30 : line.startsWith('>') ? 60 : 45;
-      const timeout = setTimeout(() => {
-        setDisplayedLines(prev => {
-          const updated = [...prev];
-          if (updated[currentLine] === undefined) {
-            updated[currentLine] = line[currentChar];
+    const timeout = setTimeout(
+      () => {
+        if (!deleting) {
+          if (charIndex < currentString.length) {
+            setTypedText(currentString.slice(0, charIndex + 1));
+            setCharIndex((c) => c + 1);
           } else {
-            updated[currentLine] = updated[currentLine] + line[currentChar];
+            setTimeout(() => setDeleting(true), 2200);
           }
-          return updated;
-        });
-        setCurrentChar(c => c + 1);
-      }, delay);
-      return () => clearTimeout(timeout);
-    } else {
-      const timeout = setTimeout(() => {
-        setCurrentLine(l => l + 1);
-        setCurrentChar(0);
-      }, 350);
-      return () => clearTimeout(timeout);
-    }
-  }, [currentLine, currentChar, done]);
+        } else {
+          if (charIndex > 0) {
+            setTypedText(currentString.slice(0, charIndex - 1));
+            setCharIndex((c) => c - 1);
+          } else {
+            setDeleting(false);
+            setStringIndex((i) => (i + 1) % TYPING_STRINGS.length);
+          }
+        }
+      },
+      deleting ? 38 : 58
+    );
 
-  return (
-    <div
-      style={{
-        fontFamily: 'var(--font-jetbrains-mono), "JetBrains Mono", monospace',
-        fontSize: '13px',
-        lineHeight: '1.8',
-        color: '#3A3A3A',
-      }}
-    >
-      {TERMINAL_LINES.map((_, lineIdx) => {
-        const text = displayedLines[lineIdx] ?? '';
-        const isActive = lineIdx === currentLine && !done;
-        const isCommand = TERMINAL_LINES[lineIdx].startsWith('>');
-        const isProgress = TERMINAL_LINES[lineIdx].includes('[---') || TERMINAL_LINES[lineIdx].includes('[===');
-        const isReady = lineIdx === 3;
+    return () => clearTimeout(timeout);
+  }, [charIndex, deleting, stringIndex]);
 
-        return (
-          <div key={lineIdx} style={{ display: 'flex', alignItems: 'center', minHeight: '24px' }}>
-            {text && (
-              <span
-                style={{
-                  color: isCommand ? '#FF2D00' : isProgress ? '#00C9B4' : isReady ? '#0A0A0A' : '#7A7A7A',
-                  fontWeight: isCommand || isReady ? 600 : 400,
-                  letterSpacing: isProgress ? '0.08em' : '0.02em',
-                }}
-              >
-                {text}
-              </span>
-            )}
-            {isActive && text !== undefined && (
-              <span
-                style={{
-                  display: 'inline-block',
-                  width: '8px',
-                  height: '14px',
-                  backgroundColor: '#FF2D00',
-                  marginLeft: '2px',
-                  animation: 'blink 0.8s step-end infinite',
-                  verticalAlign: 'middle',
-                }}
-              />
-            )}
-            {done && lineIdx === TERMINAL_LINES.length - 1 && (
-              <span
-                style={{
-                  display: 'inline-block',
-                  width: '8px',
-                  height: '14px',
-                  backgroundColor: '#FF2D00',
-                  marginLeft: '2px',
-                  animation: 'blink 0.8s step-end infinite',
-                  verticalAlign: 'middle',
-                }}
-              />
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function FloatingDecoration({ children, style }: { children: React.ReactNode; style: React.CSSProperties }) {
-  return (
-    <motion.div
-      animate={{ y: [0, -10, 0] }}
-      transition={{ duration: 4 + Math.random() * 2, repeat: Infinity, ease: 'easeInOut' }}
-      style={{
-        position: 'absolute',
-        fontFamily: 'var(--font-jetbrains-mono), monospace',
-        color: '#7B00FF',
-        opacity: 0.25,
-        fontSize: '24px',
-        fontWeight: 700,
-        pointerEvents: 'none',
-        userSelect: 'none',
-        ...style,
-      }}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-export default function HeroSection() {
-  const lineNumbers = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10'];
+  useEffect(() => {
+    const interval = setInterval(() => setShowCursor((c) => !c), 530);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <section
+      id="hero"
       style={{
-        minHeight: '100dvh',
-        paddingTop: '84px',
-        paddingBottom: '80px',
-        backgroundColor: '#FFFFFF',
-        display: 'flex',
-        alignItems: 'stretch',
-        position: 'relative',
-        overflow: 'hidden',
+        minHeight: "100vh",
+        backgroundColor: "#FFFFFF",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        paddingTop: "88px",
+        paddingBottom: "64px",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      {/* Line numbers column */}
+      {/* Background grid lines */}
       <div
-        className="hidden lg:flex"
         style={{
-          flexDirection: 'column',
-          paddingTop: '80px',
-          paddingLeft: '32px',
-          gap: '0',
-          userSelect: 'none',
-          flexShrink: 0,
-          width: '64px',
+          position: "absolute",
+          inset: 0,
+          backgroundImage: `
+            linear-gradient(to right, rgba(10,10,10,0.04) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(10,10,10,0.04) 1px, transparent 1px)
+          `,
+          backgroundSize: "80px 80px",
+          pointerEvents: "none",
         }}
+        aria-hidden="true"
+      />
+
+      {/* Decorative neon line top-left */}
+      <div
+        style={{
+          position: "absolute",
+          top: "140px",
+          left: 0,
+          width: "180px",
+          height: "2px",
+          backgroundColor: "#FF2D00",
+          boxShadow: "0 0 12px rgba(255,45,0,0.5)",
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Decorative neon line bottom-right */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: "100px",
+          right: 0,
+          width: "120px",
+          height: "2px",
+          backgroundColor: "#00C9B4",
+          boxShadow: "0 0 12px rgba(0,201,180,0.5)",
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Big decorative number */}
+      <div
+        style={{
+          position: "absolute",
+          right: "-20px",
+          top: "50%",
+          transform: "translateY(-50%)",
+          fontFamily: "var(--font-space-grotesk), sans-serif",
+          fontSize: "clamp(200px, 30vw, 420px)",
+          fontWeight: 800,
+          color: "transparent",
+          WebkitTextStroke: "1px rgba(10,10,10,0.06)",
+          lineHeight: 1,
+          userSelect: "none",
+          pointerEvents: "none",
+          letterSpacing: "-0.06em",
+        }}
+        aria-hidden="true"
       >
-        {lineNumbers.map(n => (
-          <div
-            key={n}
-            style={{
-              fontFamily: 'var(--font-jetbrains-mono), monospace',
-              color: '#CCCCCC',
-              fontSize: '11px',
-              height: '28px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              paddingRight: '12px',
-              borderRight: '1px solid rgba(10,10,10,0.08)',
-            }}
-          >
-            {n}
-          </div>
-        ))}
+        01
       </div>
 
-      {/* Main content */}
       <div
         style={{
-          flex: 1,
-          maxWidth: '1200px',
-          margin: '0 auto',
-          padding: '60px 32px 40px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          gap: '48px',
-          position: 'relative',
+          maxWidth: "1400px",
+          margin: "0 auto",
+          padding: "0 32px",
+          width: "100%",
+          position: "relative",
+          zIndex: 1,
         }}
       >
-        {/* Floating decorations */}
-        <FloatingDecoration style={{ top: '10%', right: '8%', fontSize: '28px' }}>
-          {'{'}
-        </FloatingDecoration>
-        <FloatingDecoration style={{ top: '15%', right: '12%', fontSize: '28px' }}>
-          {'}'}
-        </FloatingDecoration>
-        <FloatingDecoration style={{ bottom: '20%', right: '6%', fontSize: '20px' }}>
-          {'< />'}
-        </FloatingDecoration>
-        <FloatingDecoration style={{ top: '50%', right: '20%', fontSize: '16px', opacity: 0.15 }}>
-          {'{ }'}
-        </FloatingDecoration>
-        <FloatingDecoration style={{ bottom: '35%', left: '2%', fontSize: '18px', opacity: 0.12 }}>
-          {'//'}
-        </FloatingDecoration>
-
-        {/* Terminal block */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
+        {/* Terminal label */}
+        <div
           style={{
-            backgroundColor: '#F5F5F5',
-            border: '1px solid rgba(10,10,10,0.1)',
-            borderLeft: '3px solid #FF2D00',
-            padding: '20px 24px',
-            maxWidth: '560px',
-            position: 'relative',
+            fontFamily: "var(--font-jetbrains-mono), monospace",
+            fontSize: "11px",
+            letterSpacing: "0.15em",
+            textTransform: "uppercase",
+            color: "#FF2D00",
+            marginBottom: "24px",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
           }}
         >
-          {/* Terminal header */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              marginBottom: '14px',
-              paddingBottom: '10px',
-              borderBottom: '1px solid rgba(10,10,10,0.08)',
-            }}
-          >
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#FF2D00' }} />
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#FFE500' }} />
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#00C9B4' }} />
-            <span
-              style={{
-                fontFamily: 'var(--font-jetbrains-mono), monospace',
-                fontSize: '10px',
-                color: '#7A7A7A',
-                marginLeft: '8px',
-                letterSpacing: '0.06em',
-              }}
-            >
-              cibai@studio:~
-            </span>
-          </div>
-          <TerminalTyping />
-        </motion.div>
+          <span className="blink">▶</span>
+          <span>[ CIBAI.STUDIO // INICIO_SESIÓN ]</span>
+        </div>
 
-        {/* Hero headline */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.15, ease: [0.32, 0.72, 0, 1] }}
-          style={{ maxWidth: '800px' }}
+        {/* Main headline */}
+        <div
+          style={{
+            marginBottom: "32px",
+          }}
         >
-          {/* Eyebrow tag */}
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              marginBottom: '24px',
-              border: '1px solid rgba(10,10,10,0.12)',
-              padding: '5px 12px',
-              fontSize: '10px',
-              fontFamily: 'var(--font-jetbrains-mono), monospace',
-              letterSpacing: '0.15em',
-              color: '#7A7A7A',
-              textTransform: 'uppercase',
-            }}
-          >
-            <span
-              style={{
-                width: '6px',
-                height: '6px',
-                borderRadius: '50%',
-                backgroundColor: '#FF2D00',
-                animation: 'blink 1s step-end infinite',
-                flexShrink: 0,
-              }}
-            />
-            Estudio de diseño & desarrollo
-          </div>
-
           <h1
             style={{
-              fontFamily: 'var(--font-space-grotesk), sans-serif',
-              fontSize: 'clamp(40px, 6vw, 88px)',
+              fontFamily: "var(--font-space-grotesk), sans-serif",
+              fontSize: "clamp(56px, 10vw, 148px)",
               fontWeight: 800,
-              lineHeight: 1.0,
-              letterSpacing: '-0.04em',
-              color: '#0A0A0A',
+              color: "#0A0A0A",
+              letterSpacing: "-0.04em",
+              lineHeight: 0.92,
               margin: 0,
-              marginBottom: '20px',
+              textTransform: "uppercase",
             }}
           >
-            Creamos webs que
+            DISEÑO
             <br />
             <span
               className="glitch-text"
-              data-text="impactan."
-              style={{ color: '#FF2D00', position: 'relative', display: 'inline-block' }}
+              data-text="QUE ROMPE"
+              style={{
+                color: "#FF2D00",
+                position: "relative",
+              }}
             >
-              impactan.
+              QUE ROMPE
             </span>
+            <br />
+            SISTEMAS
           </h1>
+        </div>
 
-          <p
+        {/* Typing subtitle */}
+        <div
+          style={{
+            fontFamily: "var(--font-jetbrains-mono), monospace",
+            fontSize: "clamp(12px, 1.8vw, 18px)",
+            color: "#3A3A3A",
+            letterSpacing: "0.02em",
+            marginBottom: "48px",
+            minHeight: "28px",
+          }}
+        >
+          {typedText}
+          <span
             style={{
-              fontFamily: 'var(--font-space-grotesk), sans-serif',
-              fontSize: 'clamp(16px, 1.8vw, 20px)',
-              fontWeight: 400,
-              lineHeight: 1.6,
-              color: '#00C9B4',
-              margin: 0,
-              maxWidth: '520px',
-              letterSpacing: '-0.01em',
+              display: "inline-block",
+              width: "10px",
+              height: "1.1em",
+              backgroundColor: "#FF2D00",
+              marginLeft: "2px",
+              verticalAlign: "text-bottom",
+              opacity: showCursor ? 1 : 0,
+              transition: "opacity 0.05s",
+            }}
+          />
+        </div>
+
+        {/* CTAs */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "16px",
+            flexWrap: "wrap",
+          }}
+        >
+          <a
+            href="#contacto"
+            style={{
+              display: "inline-block",
+              fontFamily: "var(--font-jetbrains-mono), monospace",
+              fontSize: "13px",
+              fontWeight: 700,
+              color: "#FFFFFF",
+              backgroundColor: "#FF2D00",
+              textDecoration: "none",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              padding: "16px 32px",
+              border: "2px solid #FF2D00",
+              transition: "all 0.2s",
+              willChange: "transform",
+            }}
+            onMouseEnter={(e) => {
+              const el = e.currentTarget;
+              el.style.backgroundColor = "#0A0A0A";
+              el.style.borderColor = "#0A0A0A";
+              el.style.boxShadow = "4px 4px 0 #FF2D00";
+              el.style.transform = "translate(-2px, -2px)";
+            }}
+            onMouseLeave={(e) => {
+              const el = e.currentTarget;
+              el.style.backgroundColor = "#FF2D00";
+              el.style.borderColor = "#FF2D00";
+              el.style.boxShadow = "none";
+              el.style.transform = "translate(0,0)";
             }}
           >
-            Diseño de alto nivel + desarrollo preciso.
-            <br />
-            Cada píxel tiene un propósito.
-          </p>
-        </motion.div>
+            [ INICIAR_PROYECTO.exe ]
+          </a>
 
-        {/* CTA Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3, ease: [0.32, 0.72, 0, 1] }}
-          style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' }}
-        >
-          <CTAButton
-            href="#contacto"
-            primary
-            label="[ INICIAR PROYECTO ]"
-          />
-          <CTAButton
+          <a
             href="#portfolio"
-            primary={false}
-            label="[ VER PORTFOLIO ]"
-          />
-        </motion.div>
+            style={{
+              display: "inline-block",
+              fontFamily: "var(--font-jetbrains-mono), monospace",
+              fontSize: "13px",
+              fontWeight: 600,
+              color: "#0A0A0A",
+              backgroundColor: "transparent",
+              textDecoration: "none",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              padding: "16px 32px",
+              border: "2px solid rgba(10,10,10,0.2)",
+              transition: "all 0.2s",
+            }}
+            onMouseEnter={(e) => {
+              const el = e.currentTarget;
+              el.style.borderColor = "#00C9B4";
+              el.style.color = "#00C9B4";
+              el.style.boxShadow = "0 0 16px rgba(0,201,180,0.2)";
+            }}
+            onMouseLeave={(e) => {
+              const el = e.currentTarget;
+              el.style.borderColor = "rgba(10,10,10,0.2)";
+              el.style.color = "#0A0A0A";
+              el.style.boxShadow = "none";
+            }}
+          >
+            [ VER_PORTFOLIO ]
+          </a>
+        </div>
 
         {/* Bottom stats bar */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
+        <div
           style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '32px',
-            paddingTop: '32px',
-            borderTop: '1px solid rgba(10,10,10,0.08)',
+            marginTop: "80px",
+            display: "flex",
+            gap: "0",
+            borderTop: "1px solid rgba(10,10,10,0.1)",
+            paddingTop: "24px",
+            flexWrap: "wrap",
           }}
         >
           {[
-            { value: '47+', label: 'Proyectos entregados' },
-            { value: '100%', label: 'Código propio' },
-            { value: '< 2s', label: 'Carga media' },
-          ].map((stat) => (
-            <div key={stat.label}>
+            { value: "+120", label: "Proyectos completados" },
+            { value: "8+", label: "Años de experiencia" },
+            { value: "100%", label: "Código en producción" },
+            { value: "∞", label: "Café consumido" },
+          ].map((stat, i) => (
+            <div
+              key={i}
+              style={{
+                flex: "1 1 160px",
+                padding: "16px 24px",
+                borderRight: i < 3 ? "1px solid rgba(10,10,10,0.1)" : "none",
+              }}
+            >
               <div
                 style={{
-                  fontFamily: 'var(--font-space-grotesk), sans-serif',
-                  fontSize: '28px',
+                  fontFamily: "var(--font-space-grotesk), sans-serif",
+                  fontSize: "36px",
                   fontWeight: 800,
-                  color: '#0A0A0A',
-                  letterSpacing: '-0.03em',
+                  color: i % 2 === 0 ? "#FF2D00" : "#0A0A0A",
+                  letterSpacing: "-0.03em",
                   lineHeight: 1,
                 }}
               >
@@ -417,186 +333,20 @@ export default function HeroSection() {
               </div>
               <div
                 style={{
-                  fontFamily: 'var(--font-jetbrains-mono), monospace',
-                  fontSize: '10px',
-                  color: '#7A7A7A',
-                  letterSpacing: '0.06em',
-                  marginTop: '4px',
+                  fontFamily: "var(--font-jetbrains-mono), monospace",
+                  fontSize: "10px",
+                  color: "#7A7A7A",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  marginTop: "4px",
                 }}
               >
                 {stat.label}
               </div>
             </div>
           ))}
-        </motion.div>
-      </div>
-
-      {/* Right decorative panel - desktop only */}
-      <div
-        className="hidden xl:flex"
-        style={{
-          width: '280px',
-          flexShrink: 0,
-          borderLeft: '1px solid rgba(10,10,10,0.06)',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          padding: '40px 24px',
-          gap: '24px',
-        }}
-      >
-        <SidePanel />
+        </div>
       </div>
     </section>
-  );
-}
-
-function CTAButton({ href, primary, label }: { href: string; primary: boolean; label: string }) {
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <a
-      href={href}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '10px',
-        fontFamily: 'var(--font-jetbrains-mono), monospace',
-        fontSize: '12px',
-        letterSpacing: '0.1em',
-        fontWeight: 600,
-        textDecoration: 'none',
-        padding: '12px 24px',
-        transition: 'all 0.2s cubic-bezier(0.32,0.72,0,1)',
-        transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
-        ...(primary
-          ? {
-              backgroundColor: hovered ? '#0A0A0A' : '#FF2D00',
-              color: '#FFFFFF',
-              border: '1px solid transparent',
-            }
-          : {
-              backgroundColor: 'transparent',
-              color: '#0A0A0A',
-              border: '1px solid #0A0A0A',
-            }),
-      }}
-    >
-      {label}
-      <span
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '20px',
-          height: '20px',
-          backgroundColor: primary
-            ? 'rgba(255,255,255,0.2)'
-            : 'rgba(10,10,10,0.06)',
-          transition: 'transform 0.2s ease',
-          transform: hovered ? 'translate(2px, -1px) scale(1.1)' : 'translate(0,0) scale(1)',
-          fontSize: '12px',
-        }}
-      >
-        ↗
-      </span>
-    </a>
-  );
-}
-
-function SidePanel() {
-  return (
-    <>
-      {/* Tech stack tags */}
-      <div>
-        <div
-          style={{
-            fontFamily: 'var(--font-jetbrains-mono), monospace',
-            fontSize: '9px',
-            letterSpacing: '0.15em',
-            color: '#7A7A7A',
-            textTransform: 'uppercase',
-            marginBottom: '12px',
-          }}
-        >
-          // Stack
-        </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-          {['Next.js', 'React', 'TypeScript', 'Tailwind', 'Framer', 'Node.js', 'Figma'].map(tech => (
-            <span
-              key={tech}
-              style={{
-                fontFamily: 'var(--font-jetbrains-mono), monospace',
-                fontSize: '10px',
-                padding: '3px 8px',
-                border: '1px solid rgba(10,10,10,0.15)',
-                color: '#3A3A3A',
-                letterSpacing: '0.04em',
-              }}
-            >
-              {tech}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Status indicator */}
-      <div
-        style={{
-          border: '1px solid rgba(10,10,10,0.1)',
-          padding: '14px 16px',
-          backgroundColor: '#F5F5F5',
-        }}
-      >
-        <div
-          style={{
-            fontFamily: 'var(--font-jetbrains-mono), monospace',
-            fontSize: '9px',
-            letterSpacing: '0.15em',
-            color: '#7A7A7A',
-            marginBottom: '10px',
-          }}
-        >
-          // Estado actual
-        </div>
-        {[
-          { label: 'Proyectos activos', value: '3', color: '#FF2D00' },
-          { label: 'Slots disponibles', value: '2', color: '#00C9B4' },
-          { label: 'Tiempo entrega', value: '2-4 sem', color: '#7B00FF' },
-        ].map(item => (
-          <div
-            key={item.label}
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '4px 0',
-              borderBottom: '1px solid rgba(10,10,10,0.06)',
-            }}
-          >
-            <span
-              style={{
-                fontFamily: 'var(--font-jetbrains-mono), monospace',
-                fontSize: '10px',
-                color: '#7A7A7A',
-              }}
-            >
-              {item.label}
-            </span>
-            <span
-              style={{
-                fontFamily: 'var(--font-jetbrains-mono), monospace',
-                fontSize: '11px',
-                fontWeight: 700,
-                color: item.color,
-              }}
-            >
-              {item.value}
-            </span>
-          </div>
-        ))}
-      </div>
-    </>
   );
 }

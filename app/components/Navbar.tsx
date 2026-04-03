@@ -1,273 +1,216 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from "react";
 
-const navLinks = [
-  { label: 'Servicios', href: '#servicios' },
-  { label: 'Proceso', href: '#proceso' },
-  { label: 'Portfolio', href: '#portfolio' },
-  { label: 'Contacto', href: '#contacto' },
+const NAV_LINKS = [
+  { label: "INICIO", href: "#hero" },
+  { label: "SERVICIOS", href: "#servicios" },
+  { label: "PROCESO", href: "#proceso" },
+  { label: "PORTFOLIO", href: "#portfolio" },
+  { label: "CONTACTO", href: "#contacto" },
 ];
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => { document.body.style.overflow = ''; };
-  }, [menuOpen]);
-
   return (
-    <>
-      <nav
+    <nav
+      style={{
+        position: "fixed",
+        top: "28px",
+        left: 0,
+        right: 0,
+        zIndex: 9000,
+        backgroundColor: scrolled ? "rgba(255,255,255,0.97)" : "rgba(255,255,255,0.92)",
+        borderBottom: `1px solid ${scrolled ? "#FF2D00" : "rgba(10,10,10,0.1)"}`,
+        backdropFilter: "blur(12px)",
+        transition: "all 0.3s ease",
+        willChange: "transform",
+      }}
+    >
+      <div
         style={{
-          position: 'fixed',
-          top: '28px',
-          left: 0,
-          right: 0,
-          zIndex: 9980,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 32px',
-          height: '56px',
-          backgroundColor: scrolled ? 'rgba(255,255,255,0.97)' : '#FFFFFF',
-          borderBottom: '1px solid #FF2D00',
-          transition: 'background-color 0.3s cubic-bezier(0.32,0.72,0,1)',
-          backdropFilter: scrolled ? 'blur(8px)' : 'none',
+          maxWidth: "1400px",
+          margin: "0 auto",
+          padding: "0 32px",
+          height: "56px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
         }}
       >
         {/* Logo */}
         <a
-          href="#"
-          className="glitch-hover"
-          data-text="CIBAI"
+          href="#hero"
           style={{
-            fontFamily: 'var(--font-space-grotesk), "Space Grotesk", sans-serif',
-            fontWeight: 800,
-            fontSize: '22px',
-            letterSpacing: '-0.03em',
-            color: '#0A0A0A',
-            textDecoration: 'none',
-            position: 'relative',
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
           }}
         >
-          CIBAI
-          <span style={{ color: '#FF2D00' }}>.</span>
+          <span
+            style={{
+              fontFamily: "var(--font-space-grotesk), sans-serif",
+              fontSize: "22px",
+              fontWeight: 700,
+              color: "#0A0A0A",
+              letterSpacing: "-0.03em",
+              textTransform: "uppercase",
+            }}
+          >
+            CIBAI
+          </span>
+          <span
+            style={{
+              fontFamily: "var(--font-jetbrains-mono), monospace",
+              fontSize: "10px",
+              color: "#FF2D00",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              marginTop: "2px",
+            }}
+          >
+            .STUDIO
+          </span>
         </a>
 
-        {/* Desktop links */}
+        {/* Desktop Nav */}
         <div
-          className="hidden md:flex"
-          style={{ alignItems: 'center', gap: '8px' }}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0",
+          }}
+          className="hidden-mobile"
         >
-          {navLinks.map((link) => (
+          {NAV_LINKS.map((link) => (
             <a
               key={link.label}
               href={link.href}
               style={{
-                fontFamily: 'var(--font-jetbrains-mono), monospace',
-                fontSize: '12px',
-                letterSpacing: '0.06em',
-                color: '#3A3A3A',
-                textDecoration: 'none',
-                padding: '6px 14px',
-                position: 'relative',
-                transition: 'color 0.2s ease',
+                fontFamily: "var(--font-jetbrains-mono), monospace",
+                fontSize: "11px",
+                fontWeight: 500,
+                color: "#3A3A3A",
+                textDecoration: "none",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                padding: "8px 18px",
+                borderRight: "1px solid rgba(10,10,10,0.08)",
+                transition: "color 0.2s, background 0.2s",
+                position: "relative",
               }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.color = '#FF2D00';
+              onMouseEnter={(e) => {
+                (e.target as HTMLElement).style.color = "#FF2D00";
+                (e.target as HTMLElement).style.background = "rgba(255,45,0,0.04)";
               }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.color = '#3A3A3A';
+              onMouseLeave={(e) => {
+                (e.target as HTMLElement).style.color = "#3A3A3A";
+                (e.target as HTMLElement).style.background = "transparent";
               }}
             >
               {link.label}
-              <span
-                style={{
-                  position: 'absolute',
-                  bottom: '2px',
-                  left: '14px',
-                  right: '14px',
-                  height: '1px',
-                  backgroundColor: '#FF2D00',
-                  transform: 'scaleX(0)',
-                  transformOrigin: 'left',
-                  transition: 'transform 0.25s cubic-bezier(0.32,0.72,0,1)',
-                }}
-                className="nav-underline"
-              />
             </a>
           ))}
+
+          {/* CTA */}
           <a
             href="#contacto"
             style={{
-              fontFamily: 'var(--font-jetbrains-mono), monospace',
-              fontSize: '11px',
-              letterSpacing: '0.1em',
-              color: '#FFFFFF',
-              backgroundColor: '#FF2D00',
-              padding: '7px 18px',
-              border: 'none',
-              cursor: 'pointer',
-              textDecoration: 'none',
-              fontWeight: 600,
-              transition: 'all 0.2s cubic-bezier(0.32,0.72,0,1)',
+              fontFamily: "var(--font-jetbrains-mono), monospace",
+              fontSize: "11px",
+              fontWeight: 700,
+              color: "#FFFFFF",
+              backgroundColor: "#FF2D00",
+              textDecoration: "none",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              padding: "10px 20px",
+              marginLeft: "16px",
+              transition: "background 0.2s, box-shadow 0.2s",
             }}
-            onMouseEnter={e => {
-              (e.currentTarget as HTMLElement).style.backgroundColor = '#0A0A0A';
-              (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)';
+            onMouseEnter={(e) => {
+              (e.target as HTMLElement).style.background = "#CC2400";
+              (e.target as HTMLElement).style.boxShadow = "0 0 16px rgba(255,45,0,0.4)";
             }}
-            onMouseLeave={e => {
-              (e.currentTarget as HTMLElement).style.backgroundColor = '#FF2D00';
-              (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
+            onMouseLeave={(e) => {
+              (e.target as HTMLElement).style.background = "#FF2D00";
+              (e.target as HTMLElement).style.boxShadow = "none";
             }}
           >
-            [ INICIAR PROYECTO ]
+            [ CONTACTAR ]
           </a>
         </div>
 
-        {/* Mobile hamburger */}
+        {/* Mobile toggle */}
         <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden"
-          aria-label="Toggle menu"
+          onClick={() => setMobileOpen(!mobileOpen)}
           style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '8px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '5px',
-            alignItems: 'center',
-            justifyContent: 'center',
+            display: "none",
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            fontFamily: "var(--font-jetbrains-mono), monospace",
+            fontSize: "11px",
+            color: "#0A0A0A",
+            letterSpacing: "0.1em",
+          }}
+          className="show-mobile"
+        >
+          {mobileOpen ? "[ X ]" : "[ ≡ ]"}
+        </button>
+      </div>
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div
+          style={{
+            backgroundColor: "#FFFFFF",
+            borderTop: "1px solid #FF2D00",
+            padding: "16px 32px",
           }}
         >
-          <span
-            style={{
-              display: 'block',
-              width: '22px',
-              height: '1.5px',
-              backgroundColor: '#0A0A0A',
-              transformOrigin: 'center',
-              transition: 'transform 0.3s cubic-bezier(0.32,0.72,0,1)',
-              transform: menuOpen ? 'translateY(6.5px) rotate(45deg)' : 'none',
-            }}
-          />
-          <span
-            style={{
-              display: 'block',
-              width: '22px',
-              height: '1.5px',
-              backgroundColor: '#0A0A0A',
-              transition: 'opacity 0.2s ease',
-              opacity: menuOpen ? 0 : 1,
-            }}
-          />
-          <span
-            style={{
-              display: 'block',
-              width: '22px',
-              height: '1.5px',
-              backgroundColor: '#0A0A0A',
-              transformOrigin: 'center',
-              transition: 'transform 0.3s cubic-bezier(0.32,0.72,0,1)',
-              transform: menuOpen ? 'translateY(-6.5px) rotate(-45deg)' : 'none',
-            }}
-          />
-        </button>
-      </nav>
-
-      {/* Mobile menu overlay */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              zIndex: 9970,
-              backgroundColor: 'rgba(255,255,255,0.97)',
-              backdropFilter: 'blur(16px)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-            }}
-          >
-            {navLinks.map((link, i) => (
-              <motion.a
-                key={link.label}
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                transition={{
-                  duration: 0.3,
-                  delay: 0.05 + i * 0.07,
-                  ease: [0.32, 0.72, 0, 1],
-                }}
-                style={{
-                  fontFamily: 'var(--font-space-grotesk), sans-serif',
-                  fontSize: '32px',
-                  fontWeight: 700,
-                  color: '#0A0A0A',
-                  textDecoration: 'none',
-                  letterSpacing: '-0.02em',
-                }}
-              >
-                {link.label}
-              </motion.a>
-            ))}
-            <motion.a
-              href="#contacto"
-              onClick={() => setMenuOpen(false)}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3, delay: 0.35, ease: [0.32, 0.72, 0, 1] }}
+          {NAV_LINKS.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              onClick={() => setMobileOpen(false)}
               style={{
-                marginTop: '24px',
-                fontFamily: 'var(--font-jetbrains-mono), monospace',
-                fontSize: '13px',
-                letterSpacing: '0.12em',
-                color: '#FFFFFF',
-                backgroundColor: '#FF2D00',
-                padding: '12px 28px',
-                textDecoration: 'none',
-                fontWeight: 600,
+                display: "block",
+                fontFamily: "var(--font-jetbrains-mono), monospace",
+                fontSize: "12px",
+                color: "#0A0A0A",
+                textDecoration: "none",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                padding: "12px 0",
+                borderBottom: "1px solid rgba(10,10,10,0.06)",
               }}
             >
-              [ INICIAR PROYECTO ]
-            </motion.a>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              &gt; {link.label}
+            </a>
+          ))}
+        </div>
+      )}
 
       <style>{`
-        a:hover .nav-underline,
-        a:focus .nav-underline {
-          transform: scaleX(1) !important;
+        @media (max-width: 768px) {
+          .hidden-mobile { display: none !important; }
+          .show-mobile { display: block !important; }
+        }
+        @media (min-width: 769px) {
+          .show-mobile { display: none !important; }
+          .hidden-mobile { display: flex !important; }
         }
       `}</style>
-    </>
+    </nav>
   );
 }
